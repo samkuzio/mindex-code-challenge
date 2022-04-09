@@ -9,6 +9,7 @@ namespace challenge.Services
     public interface IEmployeeService
     {
         Employee GetById(String id);
+        ReportingStructure GetReportsById(String id);
         Employee Create(Employee employee);
         Employee Replace(Employee originalEmployee, Employee newEmployee);
     }

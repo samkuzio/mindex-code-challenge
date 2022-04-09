@@ -40,6 +40,16 @@ namespace challenge.Services
             return null;
         }
 
+        public ReportingStructure GetReportsById(string id)
+        {
+            if (!String.IsNullOrEmpty(id))
+            {
+                return _employeeRepository.GetReportsById(id);
+            }
+
+            return null;
+        }
+
         public Employee Replace(Employee originalEmployee, Employee newEmployee)
         {
             if(originalEmployee != null)
