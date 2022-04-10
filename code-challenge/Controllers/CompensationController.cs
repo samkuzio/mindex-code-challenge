@@ -28,13 +28,16 @@ namespace challenge.Controllers
 
             comp = _compensationService.Create(comp);
 
+            if (comp == null)
+                return NotFound();
+
             return CreatedAtRoute("getCompensationByEmployeeId", new { id = comp.Employee }, comp);
         }
 
         [HttpGet("{id}", Name = "getCompensationByEmployeeId")]
         public IActionResult GetCompensationByEmployeeId(String id)
         {
-            _logger.LogWarning($"Received compensation get request for employee {id}");
+            _logger.LogDebug($"Received compensation get request for employee {id}");
 
             var comp = _compensationService.GetByEmployeeId(id);
 
