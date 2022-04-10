@@ -34,12 +34,16 @@ namespace challenge.Repositories
 
         public ReportingStructure GetReportsById(string id)
         {
+            var rootEmployee = GetById(id);
+            if (rootEmployee == null)
+                return null;
+
             ReportingStructure reports = new ReportingStructure();
 
             // The number of reports is determined to be the number of directReports
             // for an employee and all of their direct reports
             reports.NumberOfReports = CountReports(id, 2);
-            reports.Employee = GetById(id);
+            reports.Employee = rootEmployee;
 
             return reports;
         }
