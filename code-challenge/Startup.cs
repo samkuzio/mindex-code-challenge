@@ -34,6 +34,14 @@ namespace code_challenge
             services.AddScoped<IEmployeeRepository,EmployeeRespository>();
             services.AddTransient<EmployeeDataSeeder>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+
+            services.AddDbContext<CompensationContext>(options =>
+            {
+                options.UseInMemoryDatabase("CompensationDB");
+            });
+            services.AddScoped<ICompensationRepository, CompensationRepository>();
+            services.AddScoped<ICompensationService, CompensationService>();
+
             services.AddMvc();
         }
 
