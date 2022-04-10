@@ -9,7 +9,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using code_challenge.Tests.Integration.Extensions;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using code_challenge.Tests.Integration.Helpers;
@@ -87,6 +89,38 @@ namespace code_challenge.Tests.Integration
             var employee = response.DeserializeContent<Employee>();
             Assert.AreEqual(expectedFirstName, employee.FirstName);
             Assert.AreEqual(expectedLastName, employee.LastName);
+        }
+
+        [TestMethod]
+        public void GetReportsById_Returns_Ok()
+        {
+            // Arrange
+            var rootEmployeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f";
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/reports/{rootEmployeeId}");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            var structure = response.DeserializeContent<ReportingStructure>();
+            Assert.AreEqual(4, structure.NumberOfReports);
+            Assert.AreEqual(2, structure.Employee.DirectReports.Count);
+            Assert.AreEqual(rootEmployeeId, structure.Employee.EmployeeId);
+        }
+
+        [TestMethod]
+        public void GetReportsById_Returns_NotFound()
+        {
+            // Arrange
+            var invalidId = "invalid-employee-id";
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/reports/{invalidId}");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [TestMethod]
