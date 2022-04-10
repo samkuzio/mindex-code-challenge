@@ -11,36 +11,42 @@ namespace challenge.Data
     public class EmployeeDataSeeder
     {
         private EmployeeContext _employeeContext;
+        private CompensationContext _compensationContext;
         private const String EMPLOYEE_SEED_DATA_FILE = "resources/EmployeeSeedData.json";
+        private const String COMPENSATION_SEED_DATA_FILE = "resources/CompensationSeedData.json";
 
-        public EmployeeDataSeeder(EmployeeContext employeeContext)
+        public EmployeeDataSeeder(EmployeeContext employeeContext, CompensationContext compensationContext)
         {
             _employeeContext = employeeContext;
+            _compensationContext = compensationContext;
         }
 
         public async Task Seed()
         {
             if(!_employeeContext.Employees.Any())
             {
-                List<Employee> employees = LoadEmployees();
+                List<Employee> employees = LoadDataFile<Employee>(EMPLOYEE_SEED_DATA_FILE);
+                FixUpReferences(employees);
                 _employeeContext.Employees.AddRange(employees);
-
                 await _employeeContext.SaveChangesAsync();
+
+                List<Compensation> compensations = LoadDataFile<Compensation>(COMPENSATION_SEED_DATA_FILE);
+                _compensationContext.Compensations.AddRange(compensations);
+                await _compensationContext.SaveChangesAsync();
             }
         }
 
-        private List<Employee> LoadEmployees()
+        private List<T> LoadDataFile<T>(string dataFile)
         {
-            using (FileStream fs = new FileStream(EMPLOYEE_SEED_DATA_FILE, FileMode.Open))
+            using (FileStream fs = new FileStream(dataFile, FileMode.Open))
             using (StreamReader sr = new StreamReader(fs))
             using (JsonReader jr = new JsonTextReader(sr))
             {
                 JsonSerializer serializer = new JsonSerializer();
 
-                List<Employee> employees = serializer.Deserialize<List<Employee>>(jr);
-                FixUpReferences(employees);
+                List<T> entries = serializer.Deserialize<List<T>>(jr);
 
-                return employees;
+                return entries;
             }
         }
 
